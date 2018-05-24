@@ -9,4 +9,8 @@ main.c  \
  ../../Source/include/mpu_wrappers.h  \
 ../../Source/include/task.h  \
  ../../Source/include/list.h  \
-../../Source/include/queue.h 
+../../Source/include/queue.h  \
+ HM_AS-master/common/includes/circular_buffer.h  \
+ HM_AS-master/common/includes/defines.h  \
+ HM_AS-master/common/includes/status.h  \
+HM_AS-master/dll/includes/dll.h 

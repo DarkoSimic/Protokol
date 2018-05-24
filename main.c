@@ -1,64 +1,7 @@
-/*
- * FreeRTOS Kernel V10.0.1
- * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * http://www.FreeRTOS.org
- * http://aws.amazon.com/freertos
- *
- * 1 tab == 4 spaces!
- */
-
-/*
- * Creates all the demo application tasks, then starts the scheduler.  The WEB
- * documentation provides more details of the standard demo application tasks.
- * In addition to the standard demo tasks, the following tasks and tests are
- * defined and/or created within this file:
- *
- * "Fast Interrupt Test" - A high frequency periodic interrupt is generated
- * using a free running timer to demonstrate the use of the 
- * configKERNEL_INTERRUPT_PRIORITY configuration constant.  The interrupt 
- * service routine measures the number of processor clocks that occur between
- * each interrupt - and in so doing measures the jitter in the interrupt 
- * timing.  The maximum measured jitter time is latched in the usMaxJitter 
- * variable, and displayed on the LCD by the 'Check' as described below.  
- * The fast interrupt is configured and handled in the timer_test.c source 
- * file.
- *
- * "LCD" task - the LCD task is a 'gatekeeper' task.  It is the only task that
- * is permitted to access the LCD directly.  Other tasks wishing to write a
- * message to the LCD send the message on a queue to the LCD task instead of 
- * accessing the LCD themselves.  The LCD task just blocks on the queue waiting 
- * for messages - waking and displaying the messages as they arrive.  The LCD
- * task is defined in lcd.c.  
- * 
- * "Check" task -  This only executes every three seconds but has the highest 
- * priority so is guaranteed to get processor time.  Its main function is to 
- * check that all the standard demo tasks are still operational.  Should any
- * unexpected behaviour within a demo task be discovered the 'check' task will
- * write "FAIL #n" to the LCD (via the LCD task).  If all the demo tasks are 
- * executing with their expected behaviour then the check task writes the max
- * jitter time to the LCD (again via the LCD task), as described above.
- */
-
 /* Standard includes. */
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -66,15 +9,17 @@
 #include "queue.h"
 //#include "croutine.h"
 
-/* Demo application includes. */
-//#include "BlockQ.h"
-//#include "crflash.h"
-//#include "blocktim.h"
-//#include "integer.h"
-//#include "comtest2.h"
-//#include "partest.h"
-//#include "lcd.h"
-//#include "timertest.h"
+/* Includes for protocol */
+#include "common/includes/circular_buffer.h"
+#include "common/includes/defines.h"
+#include "common/includes/status.h"
+
+#include "HM_AS-master/dll/includes/dll.h"
+
+
+/* Defines*/
+//#define NULL                                0
+
 
 /* Demo task priorities. */
 //#define mainBLOCK_Q_PRIORITY				( tskIDLE_PRIORITY + 2 )
@@ -127,6 +72,10 @@ static void prvSetupHardware( void );
 within this file. */
 void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName );
 
+
+CircularBuffer_t rxBuffer0;
+
+
 /*
  * Create the demo tasks then start the scheduler.
  */
@@ -134,23 +83,14 @@ int main( void )
 {
 	/* Configure any hardware required for this demo. */
 	prvSetupHardware();
-
-	/* Create the standard demo tasks. */
-	//vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );	
-	//vStartIntegerMathTasks( tskIDLE_PRIORITY );
-	//vStartFlashCoRoutines( mainNUM_FLASH_COROUTINES );
-	//vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
-	//vCreateBlockTimeTasks();
+    
+    halUARTInit();
+    
+    dllInit();
+    
 
 	/* Create the test tasks defined within this file. */
 	xTaskCreate( vCheckTask, "Check", mainCHECK_TAKS_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
-
-	/* Start the task that will control the LCD.  This returns the handle
-	to the queue used to write text out to the task. */
-	//xLCDQueue = xStartLCDTask();
-
-	/* Start the high frequency interrupt test. */
-	//vSetupTimerTest( mainTEST_INTERRUPT_FREQUENCY );
 
 	/* Finally start the scheduler. */
 	vTaskStartScheduler();
@@ -171,11 +111,25 @@ static void vCheckTask( void *pvParameters )
 {
 	/* Remove compiler warnings. */
 	( void ) pvParameters;
+    
+    Data_t appData;
+    
+    appData.data = 101;
+    appData.devID = 0;
+    appData.packNum = 1;
+    
 
 	for( ;; )
 	{
-		printf("Hello World!!!\n");
-        vTaskDelay(500);
+		printf("Befor FRAME.\n");
+        
+        dllDataRequest(&appData,0);
+        
+        printf("\nAfter FRAME.\n");
+        
+        
+        
+        vTaskDelay(5000);
 	}
 }
 /*-----------------------------------------------------------*/

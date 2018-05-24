@@ -13,6 +13,12 @@
         <itemPath>mcc_generated_files/mcc.h</itemPath>
         <itemPath>mcc_generated_files/pin_manager.h</itemPath>
       </logicalFolder>
+      <itemPath>HM_AS-master/common/includes/circular_buffer.h</itemPath>
+      <itemPath>HM_AS-master/common/includes/defines.h</itemPath>
+      <itemPath>HM_AS-master/common/includes/includes.h</itemPath>
+      <itemPath>HM_AS-master/common/includes/status.h</itemPath>
+      <itemPath>HM_AS-master/hal/includes/hal_uart.h</itemPath>
+      <itemPath>HM_AS-master/dll/includes/dll.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -45,6 +51,11 @@
         <itemPath>mcc_generated_files/mcc.c</itemPath>
         <itemPath>mcc_generated_files/pin_manager.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="src" displayName="src" projectFiles="true">
+        <itemPath>HM_AS-master/common/src/circular_buffer.c</itemPath>
+        <itemPath>HM_AS-master/hal/src/hal_uart.c</itemPath>
+        <itemPath>HM_AS-master/dll/src/dll.c</itemPath>
+      </logicalFolder>
       <itemPath>FreeRTOSConfig.h</itemPath>
       <itemPath>main.c</itemPath>
       <itemPath>serial/serial.c</itemPath>
@@ -61,6 +72,13 @@
     <Elem>../Common/Minimal</Elem>
     <Elem>serial</Elem>
     <Elem>ParTest</Elem>
+    <Elem>common/includes</Elem>
+    <Elem>HM_AS-master/common/src</Elem>
+    <Elem>HM_AS-master/common/includes</Elem>
+    <Elem>HM_AS-master/hal/src</Elem>
+    <Elem>HM_AS-master/hal/includes</Elem>
+    <Elem>HM_AS-master/dll/includes</Elem>
+    <Elem>HM_AS-master/dll/src</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -115,7 +133,7 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
         <property key="extra-include-directories"
-                  value="..\Common\include;..\..\Source;..\..\Source\include;..\..\Source\portable\MPLAB\PIC24_dsPIC"/>
+                  value="..\Common\include;..\..\Source;..\..\Source\include;..\..\Source\portable\MPLAB\PIC24_dsPIC;HM_AS-master"/>
         <property key="isolate-each-function" value="true"/>
         <property key="keep-inline" value="false"/>
         <property key="oXC16gcc-align-arr" value="false"/>
